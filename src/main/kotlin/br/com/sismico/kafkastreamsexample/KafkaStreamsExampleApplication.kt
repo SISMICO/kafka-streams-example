@@ -13,6 +13,7 @@ class KafkaStreamsExampleApplication(
     val kafkaStream: KafkaStreams
 ): CommandLineRunner {
     override fun run(vararg args: String?) {
+        kafkaStream.cleanUp()
         kafkaStream.start()
         CountDownLatch(1).await()
     }

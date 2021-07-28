@@ -1,0 +1,82 @@
+{
+	"info": {
+		"_postman_id": "911484b8-d71d-4fd5-a1a7-76febc609ba9",
+		"name": "Kafka Streams Example",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Version",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/version",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"version"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Username",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/user?username=sismico1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"user"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "sismico1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Address",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/address?username=sismico&address=Faria Pereira",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"address"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "sismico"
+						},
+						{
+							"key": "address",
+							"value": "Faria Pereira"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
