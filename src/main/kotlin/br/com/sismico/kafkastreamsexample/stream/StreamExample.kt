@@ -34,7 +34,7 @@ class StreamExample {
         kclient.join(
             kaddress,
             { left: String, right: String -> "$left/$right" },
-            JoinWindows.of(Duration.ofSeconds(10L))
+            JoinWindows.of(Duration.ofMinutes(10L))
         ).to("sismico.combine")
 
         return builder.build()
