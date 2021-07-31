@@ -39,6 +39,8 @@ services:
       CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
       CONFLUENT_METRICS_ENABLE: 'true'
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
+
 
   schema-registry:
     image: confluentinc/cp-schema-registry:6.2.0
@@ -70,3 +72,52 @@ services:
       CONTROL_CENTER_MONITORING_INTERCEPTOR_TOPIC_PARTITIONS: 1
       CONFLUENT_METRICS_TOPIC_REPLICATION: 1
       PORT: 9021
+
+  kafka-create-topics:
+    image: confluentinc/cp-kafka:6.2.0
+    depends_on:
+      - broker
+    hostname: kafka-create-topics
+    # We defined a dependency on "kafka", but `depends_on` will NOT wait for the
+    # dependencies to be "ready" before starting the "kafka-create-topics"
+    # container;  it waits only until the dependencies have started.  Hence we
+    # must control startup order more explicitly.
+    # See https://docs.docker.com/compose/startup-order/
+    command: "bash -c 'echo Waiting for Kafka to be ready... && \
+                        cub kafka-ready -b broker:29092 1 20 && \
+                        kafka-topics --create --topic 'sismico.client' --if-not-exists --zookeeper zookeeper:2181 --partitions 3 --replication-factor 1 && \
+                        kafka-topics --create --topic 'sismico.address' --if-not-exists --zookeeper zookeeper:2181 --partitions 3 --replication-factor 1 && \
+                        kafka-topics --create --topic 'sismico.items' --if-not-exists --zookeeper zookeeper:2181 --partitions 3 --replication-factor 1 && \
+                        kafka-topics --create --topic 'sismico.combine' --if-not-exists --zookeeper zookeeper:2181 --partitions 3 --replication-factor 1 && \
+                        sleep infinity'"
+    environment:
+      # The following settings are listed here only to satisfy the image's requirements.
+      # We override the image's `command` anyways, hence this container will not start a broker.
+      KAFKA_BROKER_ID: ignored
+      KAFKA_ZOOKEEPER_CONNECT: ignored
+
+  prometheus:
+    image: prom/prometheus
+    hostname: prometheus
+    container_name: prometheus
+    ports: 
+      - "9090:9090"
+    volumes: 
+      - ./prometheus:/etc/prometheus
+    network_mode: host
+  
+  grafana:
+    image: grafana/grafana
+    hostname: grafana
+    container_name: grafana
+    ports: 
+      - "3000:3000"
+    depends_on: 
+      - prometheus
+    environment: 
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: 123456
+    volumes: 
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/etc/grafana/dashboards
+    network_mode: host

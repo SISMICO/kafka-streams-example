@@ -1,6 +1,5 @@
 package br.com.sismico.kafkastreamsexample.stream
 
-import br.com.sismico.kafkastreamsexample.producer.ProducerTopics
 import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.JoinWindows
