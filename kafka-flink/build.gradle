@@ -1,29 +1,33 @@
 plugins {
-    id 'org.springframework.boot' version '2.5.3'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
     id 'java'
 }
 
-group = 'br.com.sismico'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+group 'br.com.sismico'
+version '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.apache.flink:flink-java:1.13.1'
     implementation 'org.apache.flink:flink-connector-kafka_2.12:1.13.1'
     implementation 'org.apache.flink:flink-clients_2.12:1.13.1'
+    implementation 'org.slf4j:slf4j-api:1.7.32'
+    implementation 'org.slf4j:slf4j-simple:1.7.32'
 
     compileOnly 'org.apache.flink:flink-streaming-java_2.12:1.13.1'
 
-    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 }
 
 test {
     useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'br.com.sismico.kafkaflink.KafkaFlinkApplication' }
 }
