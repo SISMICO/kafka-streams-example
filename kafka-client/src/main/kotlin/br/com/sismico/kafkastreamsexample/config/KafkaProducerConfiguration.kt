@@ -1,5 +1,6 @@
 package br.com.sismico.kafkastreamsexample.config
 
+import io.confluent.kafka.serializers.KafkaJsonSerializer
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerConfig
@@ -15,11 +16,11 @@ class KafkaProducerConfiguration {
     private val bootstrapAddress: String? = null
 
     @Bean
-    fun producerFactory(): Producer<String, String> {
+    fun producerFactory(): Producer<String, Any?> {
         val configProps: MutableMap<String, Any?> = HashMap()
         configProps[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = bootstrapAddress
         configProps[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
-        configProps[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
+        configProps[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = KafkaJsonSerializer::class.java
         return KafkaProducer(configProps)
     }
 }

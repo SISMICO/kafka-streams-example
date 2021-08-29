@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service
 
 @Service
 class AddressProducer(
-    val producer: Producer<String, String>
+    val producer: Producer<String, Any?>
 ) {
 
     val log: Logger = LoggerFactory.getLogger(AddressProducer::class.java)
 
     fun send(username: String, address: String) {
         log.info("Address $address sent for user $username")
-        producer.send(ProducerRecord( ProducerTopics.ADDRESS.topic, Address(username, address).toString())).get()
+        producer.send(ProducerRecord( ProducerTopics.ADDRESS.topic, Address(username, address))).get()
     }
 }

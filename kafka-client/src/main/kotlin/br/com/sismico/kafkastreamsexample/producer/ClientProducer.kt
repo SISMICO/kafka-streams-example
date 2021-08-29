@@ -1,5 +1,7 @@
 package br.com.sismico.kafkastreamsexample.producer
 
+import br.com.sismico.kafkastreamsexample.entity.Client
+import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.slf4j.Logger
@@ -8,13 +10,13 @@ import org.springframework.stereotype.Service
 
 @Service
 class ClientProducer(
-    val producer: Producer<String, String>
+    val producer: Producer<String, Any?>
 ) {
 
     val log: Logger = LoggerFactory.getLogger(ClientProducer::class.java)
 
     fun send(username: String) {
         log.info("User sent: $username")
-        producer.send(ProducerRecord(ProducerTopics.CLIENT.topic, username)).get()
+        producer.send(ProducerRecord(ProducerTopics.CLIENT.topic, Client(username))).get()
     }
 }
