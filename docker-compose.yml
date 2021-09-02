@@ -85,9 +85,9 @@ services:
     # See https://docs.docker.com/compose/startup-order/
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
                         cub kafka-ready -b broker:29092 1 20 && \
-                        kafka-topics --create --topic 'sismico.client' --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
-                        kafka-topics --create --topic 'sismico.address' --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
-                        kafka-topics --create --topic 'sismico.items' --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
+                        kafka-topics --create --topic 'sismico.customer-created' --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
+                        kafka-topics --create --topic 'sismico.score-calculted' --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
+                        kafka-topics --create --topic 'sismico.customer-segmented' --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
                         kafka-topics --create --topic 'sismico.combine' --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
                         sleep infinity'"
     environment:

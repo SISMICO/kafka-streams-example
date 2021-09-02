@@ -1,6 +1,6 @@
 {
     "type": "record",
-    "name": "CustomerCreated",
+    "name": "CustomerSegmented",
     "namespace": "com.sismico.kafkastreamsexample",
     "fields": [
         {
@@ -8,11 +8,7 @@
             "type": "string"
         },
         {
-            "name": "fullname",
-            "type": "string"
-        },
-        {
-            "name": "document",
+            "name": "segment",
             "type": "string"
         }
     ]

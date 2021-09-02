@@ -21,9 +21,8 @@ repositories {
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.kafka:spring-kafka:2.7.6")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("org.apache.kafka:kafka-streams")
-    implementation("org.apache.kafka:kafka-clients")
     implementation("org.apache.avro:avro:1.10.2")
     implementation("io.confluent:kafka-avro-serializer:6.1.2")
     //implementation("org.apache.avro:avro-compiler:1.10.2")

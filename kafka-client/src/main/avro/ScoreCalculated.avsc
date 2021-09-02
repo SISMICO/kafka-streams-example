@@ -1,6 +1,6 @@
 {
     "type": "record",
-    "name": "Score",
+    "name": "ScoreCalculated",
     "namespace": "com.sismico.kafkastreamsexample",
     "fields": [
         {
