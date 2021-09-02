@@ -1,0 +1,15 @@
+{
+   "type":"record",
+   "name":"Address",
+   "namespace":"com.sismico.kafka",
+   "fields":[
+      {
+         "name":"username",
+         "type":"string"
+      },
+      {
+         "name":"address",
+         "type":"string"
+      }
+   ]
+}

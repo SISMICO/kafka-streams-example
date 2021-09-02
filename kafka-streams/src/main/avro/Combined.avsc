@@ -1,0 +1,19 @@
+{
+   "type":"record",
+   "name":"Combined",
+   "namespace":"com.sismico.kafka",
+   "fields":[
+      {
+         "name":"username",
+         "type":"string"
+      },
+      {
+         "name":"address",
+         "type":"string"
+      },
+      {
+         "name":"combined",
+         "type":"string"
+      }
+   ]
+}

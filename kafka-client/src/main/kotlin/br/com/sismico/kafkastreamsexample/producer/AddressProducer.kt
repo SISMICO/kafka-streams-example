@@ -1,6 +1,6 @@
 package br.com.sismico.kafkastreamsexample.producer
 
-import br.com.sismico.kafkastreamsexample.entity.Address
+import org.apache.avro.generic.GenericRecord
 import org.apache.kafka.clients.producer.Producer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.slf4j.Logger
@@ -9,13 +9,14 @@ import org.springframework.stereotype.Service
 
 @Service
 class AddressProducer(
-    val producer: Producer<String, Any?>
+    val producer: Producer<String, GenericRecord?>
 ) {
 
     val log: Logger = LoggerFactory.getLogger(AddressProducer::class.java)
 
     fun send(username: String, address: String) {
-        log.info("Address $address sent for user $username")
-        producer.send(ProducerRecord( ProducerTopics.ADDRESS.topic, Address(username, address))).get()
+        val addressObject = com.sismico.kafka.Address(username, address)
+        log.info("Address ${addressObject.getAddress()} sent for user ${addressObject.getUsername()}")
+        producer.send(ProducerRecord( ProducerTopics.ADDRESS.topic, addressObject)).get()
     }
 }
