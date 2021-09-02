@@ -1,0 +1,19 @@
+{
+    "type": "record",
+    "name": "Client",
+    "namespace": "com.sismico.kafkastreamsexample",
+    "fields": [
+        {
+            "name": "username",
+            "type": "string"
+        },
+        {
+            "name": "fullname",
+            "type": "string"
+        },
+        {
+            "name": "document",
+            "type": "string"
+        }
+    ]
+}
