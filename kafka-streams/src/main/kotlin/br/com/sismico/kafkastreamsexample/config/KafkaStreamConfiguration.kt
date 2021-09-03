@@ -17,9 +17,9 @@ import java.util.*
 class KafkaStreamConfiguration(
     val stream: Topology
 ) {
-    @Value("\${kafka.bootstrapAddress:}")
+    @Value("\${kafka.bootstrapAddress}")
     private val bootstrapAddress: String? = null
-    @Value("http://localhost:8081")
+    @Value("\${kafka.schemaRegistry}")
     private val schemaRegistryAddress: String? = null
 
 

@@ -20,7 +20,7 @@ class StreamExample {
     fun build(): Topology {
         val builder = StreamsBuilder()
 
-        val clients: KStream<String, com.sismico.kafka.Client> = builder.stream(ProducerTopics.CLIENT.topic)
+        val customer: KStream<String, com.sismico.kafka.Client> = builder.stream(ProducerTopics.CLIENT.topic)
         val address: KStream<String, com.sismico.kafka.Address> = builder.stream(ProducerTopics.ADDRESS.topic)
 
 //        val counter: KTable<String, Long> = clients.groupBy { _, value -> value }
