@@ -2,13 +2,20 @@ package br.com.sismico.kafkastreamsexample.config
 
 import io.confluent.kafka.serializers.KafkaAvroDeserializer
 import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig
+import io.confluent.kafka.serializers.KafkaAvroSerializer
+import io.confluent.kafka.serializers.KafkaAvroSerializerConfig
 import org.apache.avro.specific.SpecificRecord
 import org.apache.kafka.clients.consumer.ConsumerConfig
+import org.apache.kafka.clients.producer.KafkaProducer
+import org.apache.kafka.clients.producer.Producer
+import org.apache.kafka.clients.producer.ProducerConfig
 import org.apache.kafka.common.serialization.StringDeserializer
+import org.apache.kafka.common.serialization.StringSerializer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory
+import org.springframework.kafka.core.ConsumerFactory
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
 
 
@@ -24,14 +31,25 @@ class KafkaConfiguration {
     private val groupId: String? = null
 
     @Bean
-    fun consumerFactory() =
-        DefaultKafkaConsumerFactory<String, SpecificRecord?>(consumerConfigProps())
+    fun producerFactory(): Producer<String, SpecificRecord?> =
+        KafkaProducer(producerConfigProps())
+
+    @Bean
+    fun consumerFactory(): ConsumerFactory<String, SpecificRecord?> =
+        DefaultKafkaConsumerFactory(consumerConfigProps())
 
     @Bean
     fun kafkaListenerContainerFactory() =
         ConcurrentKafkaListenerContainerFactory<String, SpecificRecord?>()
+            .apply { this.consumerFactory = consumerFactory() }
+
+    private fun producerConfigProps() =
+        HashMap<String, Any?>()
             .apply {
-                this.consumerFactory = consumerFactory()
+                this[KafkaAvroSerializerConfig.SCHEMA_REGISTRY_URL_CONFIG] = schemaRegistryAddress
+                this[ProducerConfig.BOOTSTRAP_SERVERS_CONFIG] = bootstrapAddress
+                this[ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG] = StringSerializer::class.java
+                this[ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG] = KafkaAvroSerializer::class.java
             }
 
     private fun consumerConfigProps() =
