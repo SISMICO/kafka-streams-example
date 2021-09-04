@@ -1,0 +1,19 @@
+@startuml
+actor           Customer        as customer
+participant     Site            as site
+participant     Credit          as credit
+participant     Segmenter       as segmenter
+queue           Kafka           as kafka
+
+customer    ->  site        : Create new account
+site        ->  kafka       : Customer created
+site        --> customer    : 200 (OK)
+
+credit      <-  kafka       : Customer created
+credit      ->  kafka       : Score calculated
+
+kafka       ->  segmenter   : Customer created
+kafka       ->  segmenter   : Score calculated
+segmenter   ->  segmenter   : Customer with score calculated
+segmenter   ->  kafka       : Customer segmented
+@enduml

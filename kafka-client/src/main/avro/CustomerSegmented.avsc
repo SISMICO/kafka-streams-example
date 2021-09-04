@@ -1,0 +1,15 @@
+{
+    "type": "record",
+    "name": "CustomerSegmented",
+    "namespace": "com.sismico.kafkastreamsexample",
+    "fields": [
+        {
+            "name": "username",
+            "type": "string"
+        },
+        {
+            "name": "segment",
+            "type": "string"
+        }
+    ]
+}
