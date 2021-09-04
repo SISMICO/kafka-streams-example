@@ -88,7 +88,6 @@ services:
                         kafka-topics --create --topic 'sismico.customer-created' --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
                         kafka-topics --create --topic 'sismico.score-calculted' --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
                         kafka-topics --create --topic 'sismico.customer-segmented' --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
-                        kafka-topics --create --topic 'sismico.combine' --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
                         sleep infinity'"
     environment:
       # The following settings are listed here only to satisfy the image's requirements.
