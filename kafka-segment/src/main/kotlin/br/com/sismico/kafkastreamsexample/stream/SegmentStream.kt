@@ -35,6 +35,20 @@ class SegmentStream(
         val streamScore = score
             .selectKey({ _, value -> value.getDocument() }, Named.`as`("score_document_key"))
 
+        // Group Customer
+//        val customerGrouped = streamCustomer.groupByKey().aggregate(
+//            { -> mutableMapOf<String, Long>() },
+//            { _, _, oldValue -> oldValue + 1},
+//            Materialized.`as`("customer_aggregated")
+//        ).toStream()
+
+        //customerGrouped.to("customer_aggregated")
+        streamCustomer
+            .groupByKey()
+            .count(Named.`as`("customer_aggregated"))
+            .toStream()
+            .print(Printed.toSysOut())
+
         // Join Customer with Score to Segment the Customer
         streamCustomer.join(
             streamScore,
