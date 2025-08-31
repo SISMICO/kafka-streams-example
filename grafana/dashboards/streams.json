@@ -92,7 +92,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "system_cpu_usage{instance=\"localhost:8080\", job=\"client\"}",
+            "expr": "system_cpu_usage{}",
             "interval": "",
             "legendFormat": "",
             "queryType": "randomWalk",

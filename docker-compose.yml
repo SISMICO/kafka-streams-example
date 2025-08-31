@@ -1,31 +1,25 @@
 ---
-version: '2'
+version: '3.8'
 services:
-  zookeeper:
-    image: confluentinc/cp-zookeeper:6.2.0
-    hostname: zookeeper
-    container_name: zookeeper
-#    ports:
-#      - "2181:2181"
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
+  # zookeeper:
+  #   image: confluentinc/cp-zookeeper:7.9.2
+  #   hostname: zookeeper
+  #   container_name: zookeeper
+  #   environment:
+  #     ZOOKEEPER_CLIENT_PORT: 2181
+  #     ZOOKEEPER_TICK_TIME: 2000
 
   broker:
-    image: confluentinc/cp-server:6.2.0
+    image: confluentinc/cp-server:7.9.2
     hostname: broker
     container_name: broker
-    depends_on:
-      - zookeeper
     ports:
       - "9092:9092"
       - "9101:9101"
     environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
-      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      KAFKA_NODE_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+      KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092'
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_CONFLUENT_LICENSE_TOPIC_REPLICATION_FACTOR: 1
@@ -35,15 +29,22 @@ services:
       KAFKA_JMX_PORT: 9101
       KAFKA_JMX_HOSTNAME: localhost
       KAFKA_CONFLUENT_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
       CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: broker:29092
       CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
+      KAFKA_PROCESS_ROLES: 'broker,controller'
+      KAFKA_CONTROLLER_QUORUM_VOTERS: '1@broker:29093'
+      KAFKA_LISTENERS: 'PLAINTEXT://broker:29092,CONTROLLER://broker:29093,PLAINTEXT_HOST://0.0.0.0:9092'
+      KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+      KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+      KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
       CONFLUENT_METRICS_ENABLE: 'true'
       CONFLUENT_SUPPORT_CUSTOMER_ID: 'anonymous'
+      CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'false'
 
-
   schema-registry:
-    image: confluentinc/cp-schema-registry:6.2.0
+    image: confluentinc/cp-schema-registry:7.9.2
     hostname: schema-registry
     container_name: schema-registry
     depends_on:
@@ -56,7 +57,7 @@ services:
       SCHEMA_REGISTRY_LISTENERS: http://0.0.0.0:8081
 
   control-center:
-    image: confluentinc/cp-enterprise-control-center:6.2.0
+    image: confluentinc/cp-enterprise-control-center:7.9.2
     hostname: control-center
     container_name: control-center
     depends_on:
@@ -74,7 +75,7 @@ services:
       PORT: 9021
 
   kafka-create-topics:
-    image: confluentinc/cp-kafka:6.2.0
+    image: confluentinc/cp-kafka:7.9.2
     depends_on:
       - broker
     hostname: kafka-create-topics
@@ -85,9 +86,9 @@ services:
     # See https://docs.docker.com/compose/startup-order/
     command: "bash -c 'echo Waiting for Kafka to be ready... && \
                         cub kafka-ready -b broker:29092 1 20 && \
-                        kafka-topics --create --topic 'sismico.customer-created' --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
-                        kafka-topics --create --topic 'sismico.score-calculted' --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
-                        kafka-topics --create --topic 'sismico.customer-segmented' --if-not-exists --zookeeper zookeeper:2181 --partitions 1 --replication-factor 1 && \
+                        kafka-topics --create --topic sismico.customer-created --if-not-exists --bootstrap-server broker:29092 --partitions 1 --replication-factor 1 && \
+                        kafka-topics --create --topic sismico.score-calculated --if-not-exists --bootstrap-server broker:29092 --partitions 1 --replication-factor 1 && \
+                        kafka-topics --create --topic sismico.customer-segmented --if-not-exists --bootstrap-server broker:29092 --partitions 1 --replication-factor 1 && \
                         sleep infinity'"
     environment:
       # The following settings are listed here only to satisfy the image's requirements.
@@ -96,27 +97,30 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: ignored
 
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:v2.51.2
     hostname: prometheus
     container_name: prometheus
-    ports: 
+    ports:
       - "9090:9090"
-    volumes: 
+    volumes:
       - ./prometheus:/etc/prometheus
-    network_mode: host
+    command: --config.file=/etc/prometheus/prometheus.yml
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   
   grafana:
-    image: grafana/grafana
+    image: grafana/grafana:10.4.2
     hostname: grafana
     container_name: grafana
-    ports: 
+    ports:
       - "3000:3000"
-    depends_on: 
+    depends_on:
       - prometheus
-    environment: 
+    environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: 123456
-    volumes: 
+    volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning
       - ./grafana/dashboards:/etc/grafana/dashboards
-    network_mode: host
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
